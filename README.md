@@ -32,23 +32,28 @@ I used Wireshark to go through the packet captures and CyberChef to decode a cou
 
 ## Tools I Used
 
-* **Wireshark** – for the actual packet/traffic analysis
-* **CyberChef** – for decoding URL-encoded payloads
+| Tool | Purpose |
+|------|---------|
+| **Wireshark** |for the actual packet/traffic analysis|
+| **CyberChef** |for decoding URL-encoded payloads|
 
 ### Skills I Practiced
 
-* Reading network traffic and following conversations
-* Analysing HTTP requests
-* Following HTTP streams
-* Reading User-Agent strings
-* Investigating XSS
-* URL decoding
-* Building a timeline from timestamps
-* Session/cookie analysis
-* General "how did this attack actually work" investigation
-* Spotting directory traversal
+| Skill | Status |
+|--------|:------:|
+| Reading network traffic and following conversations | ✅ |
+| Analysing HTTP requests | ✅ |
+| Following HTTP streams | ✅ |
+| Reading User-Agent strings | ✅ |
+| Investigating XSS | ✅ |
+| URL decoding | ✅ |
+| Building a timeline from timestamps | ✅ |
+| Session/cookie analysis | ✅ |
+| General "how did this attack actually work" investigation | ✅ |
+| Spotting directory traversal | ✅ |
 
 ---
+
 
 # Walking Through the Investigation
 
@@ -60,9 +65,9 @@ I went to **Statistics → Conversations** in Wireshark to see who was talking t
 
 **Finding:** `111.224.180.128`
 
-📸 `screenshots/Task-01-attacker-ip-01.png`
+![Task 1 - Attacker IP](screenshots/Task-01-attacker-ip-01.png)
 
-📸 `screenshots/Task-01-attacker-ip-02.png`
+![Task 1 - Attacker IP - Conversations](screenshots/Task-01-attacker-ip-02.png)
 
 **Takeaway:** Traffic volume and direction alone can point you toward who's worth investigating first, before you even look at what's inside the packets.
 
@@ -88,9 +93,8 @@ Followed the HTTP stream and checked the User-Agent header, which basically gave
 
 **Finding:** `Gobuster`
 
-📸 `screenshots/Task-02-tool-used-01.png`
-
-📸 `screenshots/Task-02-tool-used-02.png`
+![Task 2 - Tool Used](screenshots/Task-02-tool-used-01.png)
+![Task 2 - Tool Used - User Agent](screenshots/Task-02-tool-used-02.png)
 
 **Takeaway:** A lot of scanning/enumeration tools don't hide themselves — the User-Agent header will often just tell you what's running against you.
 
@@ -116,9 +120,9 @@ That led me to a POST request to `reviews.php`. I followed the stream and the pa
 
 Pretty classic cookie-stealing XSS — grab `document.cookie` and send it straight to the attacker's own IP.
 
-📸 `screenshots/Task-03-XSS-payload-01.png`
+![Task 3 - XSS Payload](screenshots/Task-03-XSS-payload-01.png)
 
-📸 `screenshots/Task-03-XSS-payload-02.png`
+![Task 3 - XSS Payload - Decoded](screenshots/Task-03-XSS-payload-02.png)
 
 **Takeaway:** This was my first time really connecting "XSS" as a concept to what it looks like in raw traffic. Seeing `document.cookie` getting exfiltrated made session hijacking click for me in a way just reading about it never did.
 
@@ -138,9 +142,9 @@ Two requests showed up — one at 11:50 UTC and one at 12:09 UTC. Since 11:50 wa
 
 **Finding:** `2024-03-29 12:09 UTC`
 
-📸 `screenshots/Task-04-Admin-First-Timestamp.png`
+![Task 4 - Admin First Timestamp](screenshots/Task-04-Admin-First-Timestamp.png)
 
-📸 `screenshots/Task-04-XSS-Timestamp.png`
+![Task 4 - XSS Timestamp](screenshots/Task-04-XSS-Timestamp.png)
 
 **Takeaway:** Timestamps only mean something once you line them up against each other. This was a good reminder to always double-check that a "hit" actually happened *after* the thing that would've caused it.
 
@@ -156,7 +160,7 @@ Went back to the packet from Task 4 and followed that HTTP stream, then checked 
 
 I'm not publishing the real value here — it's still a credential, even in a training lab, and I want to get in the habit of treating it that way.
 
-📸 `screenshots/Task-05-Stolen-Session-Token.png`
+![Task 5 - Stolen Session Token](screenshots/Task-05-Stolen-Session-Token.png)
 
 **Takeaway:** This was the moment where Task 3 and Task 4 actually connected — the XSS I found earlier was the exact mechanism that leaked this token.
 
@@ -188,9 +192,9 @@ So the `file` parameter on `log_viewer.php` was clearly the thing being messed w
 
 **Finding:** `log_viewer.php`
 
-📸 `screenshots/Task-06-Exploited-Script-Log-Viewer-01.png`
+![Task 6 - Exploited Script](screenshots/Task-06-Exploited-Script-Log-Viewer-01.png)
 
-📸 `screenshots/Task-06-Exploited-Script-Log-Viewer-02.png`
+![Task 6 - Exploited Script - Directory Traversal](screenshots/Task-06-Exploited-Script-Log-Viewer-02.png)
 
 **Takeaway:** Once you have a stolen session, you can literally filter traffic by it and watch what the attacker did step by step — it turns the rest of the investigation into following a trail.
 
@@ -214,7 +218,7 @@ GET /admin/log_viewer.php?file=../../../../../etc/passwd HTTP/1.1
 
 Classic directory traversal — stacking `../` to climb out of the app's directory and reach `/etc/passwd`.
 
-📸 `screenshots/Task-07-Directory-Traversal-Payload.png`
+![Task 7 - Directory Traversal Payload](screenshots/Task-07-Directory-Traversal-Payload.png)
 
 **Takeaway:** The vulnerable script and the payload are two separate findings — knowing *where* the flaw is doesn't automatically tell you *how* it was abused.
 
