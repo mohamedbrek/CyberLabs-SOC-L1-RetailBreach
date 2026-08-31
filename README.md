@@ -315,6 +315,33 @@ Next thing I want to try: a lab where I have to build the detection rule/alert m
 
 ---
 
+# Project Structure
+
+```text
+CyberLabs-SOC-L1-RetailBreach/
+│
+├── README.md
+│
+└── screenshots/
+    ├── Task-01-attacker-ip-01.png
+    ├── Task-01-attacker-ip-02.png
+    │
+    ├── Task-02-tool-used-01.png
+    ├── Task-02-tool-used-02.png
+    │
+    ├── Task-03-XSS-payload-01.png
+    ├── Task-03-XSS-payload-02.png
+    │
+    ├── Admin-First-Timestamp.png
+    ├── XSS-Timestamp.png
+    │
+    ├── Task-05-Stolen-Session-Token.png
+    │
+    ├── Task-06-Exploited-Script-Log-Viewer-01.png
+    ├── Task-06-Exploited-Script-Log-Viewer-02.png
+    │
+    └── Task-07-Directory-Traversal-Payload.png
+
 # Disclaimer
 
 This was completed in a controlled CyberLabs training environment for learning purposes. All sensitive authentication info has been redacted before publishing.
