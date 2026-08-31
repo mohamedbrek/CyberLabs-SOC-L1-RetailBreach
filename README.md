@@ -1,5 +1,31 @@
 # 🛡️ CyberLabs SOC L1 – RetailBreach Investigation
 
+<p align="center">
+  <img src="https://img.shields.io/badge/Wireshark-Network%20Analysis-1679A7?style=for-the-badge&logo=wireshark&logoColor=white">
+  <img src="https://img.shields.io/badge/CyberChef-URL%20Decoding-orange?style=for-the-badge">
+  <img src="https://img.shields.io/badge/Markdown-README-black?style=for-the-badge&logo=markdown">
+</p>
+
+## Table of Contents
+
+- [Overview](#overview)
+- [What I Was Trying to Find](#what-i-was-trying-to-find)
+- [Tools I Used](#tools-i-used)
+- [Skills I Practiced](#skills-i-practiced)
+- [Walking Through the Investigation](#walking-through-the-investigation)
+  - [Task 1 – Finding the Attacker's IP](#task-1--finding-the-attackers-ip)
+  - [Task 2 – What Tool Was Used for the Brute Force](#task-2--what-tool-was-used-for-the-brute-force)
+  - [Task 3 – Finding the XSS Payload](#task-3--finding-the-xss-payload)
+  - [Task 4 – When Did the Admin First Hit the Compromised Page](#task-4--when-did-the-admin-first-hit-the-compromised-page)
+  - [Task 5 – Finding the Stolen Session Token](#task-5--finding-the-stolen-session-token)
+  - [Task 6 – Which Script Got Exploited](#task-6--which-script-got-exploited)
+  - [Task 7 – The Payload Used to Reach a Sensitive File](#task-7--the-payload-used-to-reach-a-sensitive-file)
+- [Incident Timeline](#incident-timeline)
+- [Key Findings](#key-findings)
+- [How It All Fits Together](#how-it-all-fits-together)
+- [What I Took Away From This](#what-i-took-away-from-this)
+- [Repository Structure](#project-structure)
+
 ## Overview
 
 This is my write-up of the **RetailBreach** lab on **CyberLabs**, one of the L1 SOC investigation labs I worked through as part of my cybersecurity journey.
@@ -341,6 +367,14 @@ CyberLabs-SOC-L1-RetailBreach/
     ├── Task-06-Exploited-Script-Log-Viewer-02.png
     │
     └── Task-07-Directory-Traversal-Payload.png
+```
+
+## 🤝 Connect
+
+Thank you for taking the time to view this project.
+
+I'm documenting my cybersecurity learning journey by completing hands-on labs in networking, Linux, digital forensics, cloud computing, and SOC analysis. Feel free to explore my other repositories to see what I'm learning next.
+
 
 
 
