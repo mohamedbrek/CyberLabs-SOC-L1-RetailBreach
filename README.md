@@ -315,7 +315,7 @@ Next thing I want to try: a lab where I have to build the detection rule/alert m
 
 ---
 
-# Project Structure
+# Repository Structure
 
 ```text
 CyberLabs-SOC-L1-RetailBreach/
