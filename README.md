@@ -132,7 +132,7 @@ Pretty classic cookie-stealing XSS — grab `document.cookie` and send it straig
 
 **Figure 5: HTTP request containing the XSS payload.**
 
-![Task 3 - XSS Payload - Decoded](screenshots/Task-03-XSS-payload-02.png)
+![Task 3 - XSS Payload Decoded](screenshots/Task-03-XSS-payload-02.png)
 
 **Figure 6: Decoded XSS payload showing `document.cookie` being sent to the attacker's IP.**
 
@@ -154,11 +154,11 @@ Two requests showed up — one at 11:50 UTC and one at 12:09 UTC. Since 11:50 wa
 
 **Finding:** `2024-03-29 12:09 UTC`
 
-![Task 4 - Admin First Timestamp](screenshots/Admin-First-Timestamp.png)
+![Task 4 - Admin First Timestamp](screenshots/Task-04-Admin-First-Visit-Timestamp.png)
 
 **Figure 7: Admin request showing the first visit to the compromised page at 12:09 UTC.**
 
-![Task 4 - XSS Timestamp](screenshots/XSS-Timestamp.png)
+![Task 4 - XSS Timestamp](screenshots/Task-04-XSS-Injection-Timestamp.png)
 
 **Figure 8: Timestamp showing when the XSS payload was injected.**
 
