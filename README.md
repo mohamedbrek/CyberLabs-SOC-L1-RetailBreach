@@ -32,28 +32,27 @@ I used Wireshark to go through the packet captures and CyberChef to decode a cou
 
 ## Tools I Used
 
-| Tool | Purpose |
-|------|---------|
-| **Wireshark** |for the actual packet/traffic analysis|
-| **CyberChef** |for decoding URL-encoded payloads|
+| Tool          | Purpose                                |
+| ------------- | -------------------------------------- |
+| **Wireshark** | for the actual packet/traffic analysis |
+| **CyberChef** | for decoding URL-encoded payloads      |
 
 ### Skills I Practiced
 
-| Skill | Status |
-|--------|:------:|
-| Reading network traffic and following conversations | ✅ |
-| Analysing HTTP requests | ✅ |
-| Following HTTP streams | ✅ |
-| Reading User-Agent strings | ✅ |
-| Investigating XSS | ✅ |
-| URL decoding | ✅ |
-| Building a timeline from timestamps | ✅ |
-| Session/cookie analysis | ✅ |
-| General "how did this attack actually work" investigation | ✅ |
-| Spotting directory traversal | ✅ |
+| Skill                                                     | Status |
+| --------------------------------------------------------- | :----: |
+| Reading network traffic and following conversations       |    ✅   |
+| Analysing HTTP requests                                   |    ✅   |
+| Following HTTP streams                                    |    ✅   |
+| Reading User-Agent strings                                |    ✅   |
+| Investigating XSS                                         |    ✅   |
+| URL decoding                                              |    ✅   |
+| Building a timeline from timestamps                       |    ✅   |
+| Session/cookie analysis                                   |    ✅   |
+| General "how did this attack actually work" investigation |    ✅   |
+| Spotting directory traversal                              |    ✅   |
 
 ---
-
 
 # Walking Through the Investigation
 
@@ -67,7 +66,11 @@ I went to **Statistics → Conversations** in Wireshark to see who was talking t
 
 ![Task 1 - Attacker IP](screenshots/Task-01-attacker-ip-01.png)
 
+**Figure 1: Wireshark Conversations showing the suspected attacker IP.**
+
 ![Task 1 - Attacker IP - Conversations](screenshots/Task-01-attacker-ip-02.png)
+
+**Figure 2: Network conversation details supporting the attacker IP finding.**
 
 **Takeaway:** Traffic volume and direction alone can point you toward who's worth investigating first, before you even look at what's inside the packets.
 
@@ -94,7 +97,12 @@ Followed the HTTP stream and checked the User-Agent header, which basically gave
 **Finding:** `Gobuster`
 
 ![Task 2 - Tool Used](screenshots/Task-02-tool-used-01.png)
+
+**Figure 3: Filtered traffic showing activity from the suspected attacker.**
+
 ![Task 2 - Tool Used - User Agent](screenshots/Task-02-tool-used-02.png)
+
+**Figure 4: User-Agent information identifying Gobuster.**
 
 **Takeaway:** A lot of scanning/enumeration tools don't hide themselves — the User-Agent header will often just tell you what's running against you.
 
@@ -122,7 +130,11 @@ Pretty classic cookie-stealing XSS — grab `document.cookie` and send it straig
 
 ![Task 3 - XSS Payload](screenshots/Task-03-XSS-payload-01.png)
 
+**Figure 5: HTTP request containing the XSS payload.**
+
 ![Task 3 - XSS Payload - Decoded](screenshots/Task-03-XSS-payload-02.png)
+
+**Figure 6: Decoded XSS payload showing `document.cookie` being sent to the attacker's IP.**
 
 **Takeaway:** This was my first time really connecting "XSS" as a concept to what it looks like in raw traffic. Seeing `document.cookie` getting exfiltrated made session hijacking click for me in a way just reading about it never did.
 
@@ -142,9 +154,13 @@ Two requests showed up — one at 11:50 UTC and one at 12:09 UTC. Since 11:50 wa
 
 **Finding:** `2024-03-29 12:09 UTC`
 
-![Task 4 - Admin First Timestamp](screenshots/Task-04-Admin-First-Timestamp.png)
+![Task 4 - Admin First Timestamp](screenshots/Admin-First-Timestamp.png)
 
-![Task 4 - XSS Timestamp](screenshots/Task-04-XSS-Timestamp.png)
+**Figure 7: Admin request showing the first visit to the compromised page at 12:09 UTC.**
+
+![Task 4 - XSS Timestamp](screenshots/XSS-Timestamp.png)
+
+**Figure 8: Timestamp showing when the XSS payload was injected.**
 
 **Takeaway:** Timestamps only mean something once you line them up against each other. This was a good reminder to always double-check that a "hit" actually happened *after* the thing that would've caused it.
 
@@ -161,6 +177,8 @@ Went back to the packet from Task 4 and followed that HTTP stream, then checked 
 I'm not publishing the real value here — it's still a credential, even in a training lab, and I want to get in the habit of treating it that way.
 
 ![Task 5 - Stolen Session Token](screenshots/Task-05-Stolen-Session-Token.png)
+
+**Figure 9: HTTP stream showing the stolen session token, with the sensitive value redacted.**
 
 **Takeaway:** This was the moment where Task 3 and Task 4 actually connected — the XSS I found earlier was the exact mechanism that leaked this token.
 
@@ -194,7 +212,11 @@ So the `file` parameter on `log_viewer.php` was clearly the thing being messed w
 
 ![Task 6 - Exploited Script](screenshots/Task-06-Exploited-Script-Log-Viewer-01.png)
 
+**Figure 10: Request to the vulnerable `log_viewer.php` admin script.**
+
 ![Task 6 - Exploited Script - Directory Traversal](screenshots/Task-06-Exploited-Script-Log-Viewer-02.png)
+
+**Figure 11: Request showing the directory traversal attempt against the `file` parameter.**
 
 **Takeaway:** Once you have a stolen session, you can literally filter traffic by it and watch what the attacker did step by step — it turns the rest of the investigation into following a trail.
 
@@ -219,6 +241,8 @@ GET /admin/log_viewer.php?file=../../../../../etc/passwd HTTP/1.1
 Classic directory traversal — stacking `../` to climb out of the app's directory and reach `/etc/passwd`.
 
 ![Task 7 - Directory Traversal Payload](screenshots/Task-07-Directory-Traversal-Payload.png)
+
+**Figure 12: Directory traversal payload targeting `/etc/passwd`.**
 
 **Takeaway:** The vulnerable script and the payload are two separate findings — knowing *where* the flaw is doesn't automatically tell you *how* it was abused.
 
