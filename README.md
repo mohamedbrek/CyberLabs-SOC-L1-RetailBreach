@@ -342,6 +342,5 @@ CyberLabs-SOC-L1-RetailBreach/
     │
     └── Task-07-Directory-Traversal-Payload.png
 
-```text
 
 
