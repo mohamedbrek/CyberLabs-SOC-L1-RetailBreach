@@ -26,6 +26,7 @@
 * [How It All Fits Together](#how-it-all-fits-together)
 * [What I Took Away From This](#what-i-took-away-from-this)
 * [Repository Structure](#repository-structure)
+* [Disclaimer](#disclaimer)
 * [Connect](#connect)
 
 ---
